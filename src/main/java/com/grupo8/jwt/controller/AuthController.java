@@ -12,7 +12,7 @@ import com.grupo8.jwt.model.LoginRequest;
 import com.grupo8.jwt.service.JwtService;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/grupo8/auth")
 public class AuthController {
 
     private final JwtService jwtService;
