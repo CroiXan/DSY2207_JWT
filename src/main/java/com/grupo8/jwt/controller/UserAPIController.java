@@ -34,7 +34,7 @@ public class UserAPIController {
     }
 
     @GetMapping("/obtenerUsuarios")
-    public List<Usuario> obtenerUsuarios() {
+    public String obtenerUsuarios() {
         return userAPIClient.obtenerUsuarios();
     }
 
