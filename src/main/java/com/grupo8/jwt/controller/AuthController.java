@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.grupo8.jwt.client.AuditoriaGraphqlClient;
 import com.grupo8.jwt.client.UserAPIClient;
+import com.grupo8.jwt.model.AudUsuarioRequest;
 import com.grupo8.jwt.model.JwtResponse;
 import com.grupo8.jwt.model.LoginReq;
 import com.grupo8.jwt.model.LoginRequest;
@@ -23,10 +25,12 @@ public class AuthController {
 
     private final JwtService jwtService;
     private final UserAPIClient userAPIClient;
+    private final AuditoriaGraphqlClient audGraphClient;
 
-    public AuthController(JwtService jwtService, UserAPIClient userAPIClient) {
+    public AuthController(JwtService jwtService, UserAPIClient userAPIClient, AuditoriaGraphqlClient audGraphClient) {
         this.jwtService = jwtService;
         this.userAPIClient = userAPIClient;
+        this.audGraphClient = audGraphClient;
     }
 
     @PostMapping("/login")
@@ -36,22 +40,41 @@ public class AuthController {
 
         ObjectMapper mapper = new ObjectMapper();
         LoginResponse responseLogin;
+        int userId = 0;
+
         try {
             responseLogin = mapper.readValue(response, LoginResponse.class);
         } catch (JsonMappingException e) {
             e.printStackTrace();
+            this.audInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
+            this.audInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
 
         if (!responseLogin.getID_USUARIO().contains("no coinciden")) {
-            String token = jwtService.generateToken(loginReq.getNickname());
+            try {
+                userId = Integer.parseInt(responseLogin.getID_USUARIO());
+            } catch (NumberFormatException e) {
+                System.out.println("Error al parsear Id");
+            }
+            String token = jwtService.generateToken(loginReq.getNickname(),userId);
+            this.audInsert(userId,"Credenciales Válidas|UserName:"+request.getUsername());
             return ResponseEntity.ok(new JwtResponse(token));
         } else {
+            this.audInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
 
+    private void audInsert(int idUser, String detalle){
+        AudUsuarioRequest audUser = new AudUsuarioRequest();
+        audUser.setIdUsuarioAfectado(idUser);
+        audUser.setIdUsuarioEjecutor(idUser);
+        audUser.setAccion("LOGIN");
+        audUser.setDetalleCambios(detalle);
+        this.audGraphClient.UserAuditInsert(audUser);
+    }
 }

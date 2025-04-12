@@ -21,11 +21,12 @@ public class JwtService {
         this.keyProvider = keyProvider;
     }
 
-    public String generateToken(String username) {
+    public String generateToken(String username, int userId) {
         return Jwts.builder()
             .subject(username)
             .issuedAt(Date.from(Instant.now()))
             .expiration(Date.from(Instant.now().plus(1, ChronoUnit.DAYS)))
+            .claim("userId", userId)
             .signWith(keyProvider.getPrivateKey(), Jwts.SIG.RS256)
             .compact();
     }
