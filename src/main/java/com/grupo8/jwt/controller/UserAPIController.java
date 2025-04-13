@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import com.grupo8.jwt.client.UserAPIClient;
 import com.grupo8.jwt.model.Usuario;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController

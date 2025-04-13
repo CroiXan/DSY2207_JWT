@@ -12,19 +12,26 @@ import org.springframework.web.bind.annotation.RestController;
 import com.grupo8.jwt.client.RoleAPIClient;
 import com.grupo8.jwt.model.Roles;
 import com.grupo8.jwt.model.UserRoles;
+import com.grupo8.jwt.service.AuditService;
+import com.grupo8.jwt.util.ClaimsUtil;
 
 @RestController
 @RequestMapping("/api/grupo8/role")
 public class RoleAPIController {
 
     private final RoleAPIClient roleAPIClient;
+    private final AuditService auditService;
+    private ClaimsUtil claimsUtil;
 
-    public RoleAPIController(RoleAPIClient roleAPIClient) {
+    public RoleAPIController(RoleAPIClient roleAPIClient, AuditService auditService) {
         this.roleAPIClient = roleAPIClient;
+        this.auditService = auditService;
+        claimsUtil = new ClaimsUtil();
     }
-    
+
     @PostMapping("/createRole")
     public String createRole(@RequestBody Roles body){
+        this.auditService.rolAuditInsert("CREATE","Crea Rol",0,this.claimsUtil.getClaimUserId());
         return this.roleAPIClient.createRole(body);
     }
 
@@ -40,16 +47,19 @@ public class RoleAPIController {
 
     @PutMapping("/updateRole/{id}")
     public String updateRole(@PathVariable("id") Long id, @RequestBody Roles body){
+        this.auditService.rolAuditInsert("UPDATE","Actualiza Rol",id.intValue(),this.claimsUtil.getClaimUserId());
         return this.roleAPIClient.updateRole(id, body);
     }
 
     @DeleteMapping("/deleteRole/{id}")
     String deleteRole(@PathVariable("id") Long id){
+        this.auditService.rolAuditInsert("DELETE","Borra Rol",id.intValue(),this.claimsUtil.getClaimUserId());
         return this.roleAPIClient.deleteRole(id);
     }
 
     @PostMapping("/createUserRole")
     String createUserRole(@RequestBody UserRoles userRole){
+        this.auditService.UserRolAuditInsert("ASSIGN", userRole.getRole_id().intValue(), userRole.getUser_id().intValue(), this.claimsUtil.getClaimUserId());
         return this.roleAPIClient.createUserRole(userRole);
     }
 
@@ -75,7 +85,9 @@ public class RoleAPIController {
     
     @DeleteMapping("/deleteUserRole/{id}")
     String deleteUserRole(@PathVariable("id") Long id){
+        this.auditService.UserRolAuditInsert("UNASSIGN", id.intValue(), 0, this.claimsUtil.getClaimUserId());
         return this.roleAPIClient.deleteUserRole(id);
     }
+
 
 }

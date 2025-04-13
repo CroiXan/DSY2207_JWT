@@ -10,13 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.grupo8.jwt.client.AuditoriaGraphqlClient;
 import com.grupo8.jwt.client.UserAPIClient;
-import com.grupo8.jwt.model.AudUsuarioRequest;
 import com.grupo8.jwt.model.JwtResponse;
 import com.grupo8.jwt.model.LoginReq;
 import com.grupo8.jwt.model.LoginRequest;
 import com.grupo8.jwt.model.LoginResponse;
+import com.grupo8.jwt.service.AuditService;
 import com.grupo8.jwt.service.JwtService;
 
 @RestController
@@ -25,12 +24,12 @@ public class AuthController {
 
     private final JwtService jwtService;
     private final UserAPIClient userAPIClient;
-    private final AuditoriaGraphqlClient audGraphClient;
+    private final AuditService auditService;
 
-    public AuthController(JwtService jwtService, UserAPIClient userAPIClient, AuditoriaGraphqlClient audGraphClient) {
+    public AuthController(JwtService jwtService, UserAPIClient userAPIClient, AuditService auditService) {
         this.jwtService = jwtService;
         this.userAPIClient = userAPIClient;
-        this.audGraphClient = audGraphClient;
+        this.auditService = auditService;
     }
 
     @PostMapping("/login")
@@ -46,11 +45,11 @@ public class AuthController {
             responseLogin = mapper.readValue(response, LoginResponse.class);
         } catch (JsonMappingException e) {
             e.printStackTrace();
-            this.audInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
+            this.auditService.audLoginInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            this.audInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
+            this.auditService.audLoginInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
 
@@ -61,20 +60,12 @@ public class AuthController {
                 System.out.println("Error al parsear Id");
             }
             String token = jwtService.generateToken(loginReq.getNickname(),userId);
-            this.audInsert(userId,"Credenciales Válidas|UserName:"+request.getUsername());
+            this.auditService.audLoginInsert(userId,"Credenciales Válidas|UserName:"+request.getUsername());
             return ResponseEntity.ok(new JwtResponse(token));
         } else {
-            this.audInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
+            this.auditService.audLoginInsert(userId,"Credenciales inválidas|UserName:"+request.getUsername());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales inválidas");
         }
     }
 
-    private void audInsert(int idUser, String detalle){
-        AudUsuarioRequest audUser = new AudUsuarioRequest();
-        audUser.setIdUsuarioAfectado(idUser);
-        audUser.setIdUsuarioEjecutor(idUser);
-        audUser.setAccion("LOGIN");
-        audUser.setDetalleCambios(detalle);
-        this.audGraphClient.UserAuditInsert(audUser);
-    }
 }

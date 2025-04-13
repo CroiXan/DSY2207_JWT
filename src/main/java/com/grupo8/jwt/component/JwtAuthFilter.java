@@ -41,6 +41,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 String username = claims.getSubject();
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(username, null, List.of());
+                authentication.setDetails(claims);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException e) {
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
