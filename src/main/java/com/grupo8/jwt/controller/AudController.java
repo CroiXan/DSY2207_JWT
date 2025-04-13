@@ -16,7 +16,7 @@ import com.grupo8.jwt.client.AuditoriaGraphqlClient;
 import com.grupo8.jwt.model.GraphQLRequest;
 
 @RestController
-@RequestMapping("/api/grupo8/auditoria")
+@RequestMapping("/api/grupo8")
 public class AudController {
 
     private final AuditoriaGraphqlClient audGraphClient;
@@ -28,7 +28,7 @@ public class AudController {
     }
 
 
-    @PostMapping
+    @PostMapping("/auditoria")
     public ResponseEntity<?> AudGraphQl(@RequestBody GraphQLRequest request){
         try {
             Map<String, Object> body = new HashMap<>();
@@ -36,6 +36,26 @@ public class AudController {
             body.put("variables", request.getVariables() != null ? request.getVariables() : Map.of());
 
             String respuesta = audGraphClient.ejecutarQuery(body);
+            JsonNode json = objectMapper.readTree(respuesta);
+
+            if (json.has("errors")) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(json);
+            }
+
+            return ResponseEntity.ok(json.get("data"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/auditsearch")
+    public ResponseEntity<?> SearchAuditFunction(@RequestBody GraphQLRequest request){
+        try {
+            Map<String, Object> body = new HashMap<>();
+            body.put("query", request.getQuery());
+            body.put("variables", request.getVariables() != null ? request.getVariables() : Map.of());
+
+            String respuesta = audGraphClient.SearchAuditFunction(body);
             JsonNode json = objectMapper.readTree(respuesta);
 
             if (json.has("errors")) {

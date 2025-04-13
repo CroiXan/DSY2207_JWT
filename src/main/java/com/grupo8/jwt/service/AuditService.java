@@ -28,6 +28,16 @@ public class AuditService {
     }
 
     @Async
+    public void audUserInsert(String accion, int idUser, String detalle){
+        AudUsuarioRequest audUser = new AudUsuarioRequest();
+        audUser.setIdUsuarioAfectado(idUser);
+        audUser.setIdUsuarioEjecutor(idUser);
+        audUser.setAccion(accion);
+        audUser.setDetalleCambios(detalle);
+        this.audGraphClient.UserAuditInsert(audUser);
+    }
+
+    @Async
     public void rolAuditInsert(String accion, String detalle, int rolId, int userId){
         AudRolRequest audRol = new AudRolRequest();
         audRol.setAccion(accion);
