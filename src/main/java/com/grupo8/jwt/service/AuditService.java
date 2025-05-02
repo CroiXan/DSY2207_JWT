@@ -24,7 +24,7 @@ public class AuditService {
         audUser.setIdUsuarioEjecutor(idUser);
         audUser.setAccion("LOGIN");
         audUser.setDetalleCambios(detalle);
-        this.audGraphClient.UserAuditInsert(audUser);
+        this.audGraphClient.UserAuditTrigger(audUser);
     }
 
     @Async
@@ -34,7 +34,7 @@ public class AuditService {
         audUser.setIdUsuarioEjecutor(idUser);
         audUser.setAccion(accion);
         audUser.setDetalleCambios(detalle);
-        this.audGraphClient.UserAuditInsert(audUser);
+        this.audGraphClient.UserAuditTrigger(audUser);
     }
 
     @Async
@@ -44,7 +44,7 @@ public class AuditService {
         audRol.setDetalleCambios(detalle);
         audRol.setIdRolAfectado(rolId);
         audRol.setIdUsuarioEjecutor(userId);
-        this.audGraphClient.RolAuditInsert(audRol);
+        this.audGraphClient.RoleAuditTrigger(audRol);
     }
 
     @Async
@@ -54,6 +54,6 @@ public class AuditService {
         audUserRol.setIdRol(rolId);
         audUserRol.setIdUsuario(userId);
         audUserRol.setIdUsuarioEjecutor(execUserId);
-        this.audGraphClient.UserRolAuditInsert(audUserRol);
+        this.audGraphClient.UserRoleAuditTrigger(audUserRol);
     }
 }

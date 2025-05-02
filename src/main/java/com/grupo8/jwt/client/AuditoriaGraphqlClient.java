@@ -19,13 +19,13 @@ public interface AuditoriaGraphqlClient {
     @PostMapping(value = "/api/auditsearch", consumes = "application/json")
     String SearchAuditFunction(@RequestBody Map<String, Object> query);
 
-    @PostMapping(value = "/api/userAuditInsert?code=EHhIN3qvTTMaoURTumzQSi7B01rgKGUCQeqPcquLnS7iAzFuhNypqQ==", consumes = "application/json", produces = "text/plain")
-    String UserAuditInsert(@RequestBody AudUsuarioRequest audUser);
+    @PostMapping(value = "/api/userAuditTrigger?code=EHhIN3qvTTMaoURTumzQSi7B01rgKGUCQeqPcquLnS7iAzFuhNypqQ==", consumes = "application/json", produces = "text/plain")
+    String UserAuditTrigger(@RequestBody AudUsuarioRequest audUser);
 
-    @PostMapping(value = "/api/rolAuditInsert?code=EHhIN3qvTTMaoURTumzQSi7B01rgKGUCQeqPcquLnS7iAzFuhNypqQ==", consumes = "application/json", produces = "text/plain")
-    String RolAuditInsert(@RequestBody AudRolRequest audRol);
+    @PostMapping(value = "/api/roleAuditTrigger?code=EHhIN3qvTTMaoURTumzQSi7B01rgKGUCQeqPcquLnS7iAzFuhNypqQ==", consumes = "application/json", produces = "text/plain")
+    String RoleAuditTrigger(@RequestBody AudRolRequest audRol);
 
-    @PostMapping(value = "/api/userRolAuditInsert?code=EHhIN3qvTTMaoURTumzQSi7B01rgKGUCQeqPcquLnS7iAzFuhNypqQ==", consumes = "application/json", produces = "text/plain")
-    String UserRolAuditInsert(@RequestBody AudUsuarioRolRequest audUserRol);
+    @PostMapping(value = "/api/userRoleAuditTrigger?code=EHhIN3qvTTMaoURTumzQSi7B01rgKGUCQeqPcquLnS7iAzFuhNypqQ==", consumes = "application/json", produces = "text/plain")
+    String UserRoleAuditTrigger(@RequestBody AudUsuarioRolRequest audUserRol);
 
 }
