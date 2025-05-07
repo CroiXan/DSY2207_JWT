@@ -8,44 +8,49 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.grupo8.jwt.model.Roles;
+import com.grupo8.jwt.model.UnassignRoleRequest;
 import com.grupo8.jwt.model.UserRoles;
 
-@FeignClient(name = "userrole-service", url = "https://grupo8rolesmanagement.azurewebsites.net/api")
+@FeignClient(name = "userrole-service", url = "https://grupo8rolesfunctions.azurewebsites.net/api")
 public interface RoleAPIClient {
 
-    @PostMapping(value = "/createRole?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==", consumes = "application/json")
-    String createRole(@RequestBody Roles body);
+    @PostMapping(value = "/createRole", consumes = "application/json")
+    String createRole(@RequestBody Roles body, @RequestParam("code") String apiKey);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getRole/{id}?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==")
-    String getRole(@PathVariable("id") Long id);
+    @RequestMapping(method = RequestMethod.GET, value = "/getRole/{id}")
+    String getRole(@PathVariable("id") Long id, @RequestParam("code") String apiKey);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getAllRoles?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==")
-    String getAllRoles();
+    @RequestMapping(method = RequestMethod.GET, value = "/getAllRoles")
+    String getAllRoles(@RequestParam("code") String apiKey);
 
-    @PutMapping(value = "/updateRole/{id}?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==", consumes = "application/json")
-    String updateRole(@PathVariable("id") Long id, @RequestBody Roles body);
+    @PutMapping(value = "/updateRole/{id}", consumes = "application/json")
+    String updateRole(@PathVariable("id") Long id, @RequestBody Roles body, @RequestParam("code") String apiKey);
 
-    @DeleteMapping(value = "/deleteRole/{id}?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==")
-    String deleteRole(@PathVariable("id") Long id);
+    @DeleteMapping(value = "/deleteRole/{id}")
+    String deleteRole(@PathVariable("id") Long id, @RequestParam("code") String apiKey);
 
-    @PostMapping(value = "/createUserRole?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==", consumes = "application/json")
-    String createUserRole(@RequestBody UserRoles userRole);
+    @PostMapping(value = "/createUserRole", consumes = "application/json")
+    String createUserRole(@RequestBody UserRoles userRole, @RequestParam("code") String apiKey);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getUserRole/{id}?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==")
-    String getUserRole(@PathVariable("id") Long id);
+    @RequestMapping(method = RequestMethod.GET, value = "/getUserRole/{id}")
+    String getUserRole(@PathVariable("id") Long id, @RequestParam("code") String apiKey);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getUserRoleByUser/{id}?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==")
-    String getUserRoleByUser(@PathVariable("id") Long id);
+    @RequestMapping(method = RequestMethod.GET, value = "/getUserRoleByUser/{id}")
+    String getUserRoleByUser(@PathVariable("id") Long id, @RequestParam("code") String apiKey);
 
-    @RequestMapping(method = RequestMethod.GET, value = "/getUserRoleByRoleId/{id}?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==")
-    String getUserRoleByRoleId(@PathVariable("id") Long id);
+    @RequestMapping(method = RequestMethod.GET, value = "/getUserRoleByRoleId/{id}")
+    String getUserRoleByRoleId(@PathVariable("id") Long id, @RequestParam("code") String apiKey);
     
-    @RequestMapping(method = RequestMethod.GET, value = "/getAllUserRoles?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==")
-    String getAllUserRoles();
+    @RequestMapping(method = RequestMethod.GET, value = "/getAllUserRoles")
+    String getAllUserRoles(@RequestParam("code") String apiKey);
     
-    @DeleteMapping(value = "/deleteUserRole/{id}?code=GnveK0TEzZEW85ZQGpb2LOe2iPikoZz819qdE9ljqXjoAzFu2sDGlA==")
-    String deleteUserRole(@PathVariable("id") Long id);
+    @DeleteMapping(value = "/deleteUserRole/{id}")
+    String deleteUserRole(@PathVariable("id") Long id, @RequestParam("code") String apiKey);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/unassignRoleTrigger")
+    String UnassignRoleTrigger(@RequestBody UnassignRoleRequest unassignRoleRequest, @RequestParam("code") String apiKey);
     
 }
