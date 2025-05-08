@@ -52,5 +52,8 @@ public interface RoleAPIClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/unassignRoleTrigger")
     String UnassignRoleTrigger(@RequestBody UnassignRoleRequest unassignRoleRequest, @RequestParam("code") String apiKey);
+
+    @RequestMapping(method = RequestMethod.POST, value = "/assignRoleTrigger")
+    String AssignRoleTrigger(@RequestBody String jsonResponse, @RequestParam("code") String apiKey);
     
 }

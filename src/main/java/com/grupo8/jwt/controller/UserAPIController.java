@@ -1,7 +1,9 @@
 package com.grupo8.jwt.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import com.grupo8.jwt.client.RoleAPIClient;
 import com.grupo8.jwt.client.UserAPIClient;
 import com.grupo8.jwt.model.Usuario;
 import com.grupo8.jwt.service.AuditService;
@@ -14,19 +16,28 @@ import java.util.Optional;
 public class UserAPIController {
 
     private final UserAPIClient userAPIClient;
+    private final RoleAPIClient roleAPIClient;
     private final AuditService auditService;
     private ClaimsUtil claimsUtil;
 
-    public UserAPIController(UserAPIClient userAPIClient, AuditService auditService) {
+    @Value("${azure.function.role.key}")
+    private String roleApiKey;
+
+    public UserAPIController(UserAPIClient userAPIClient, AuditService auditService, RoleAPIClient roleAPIClient) {
         this.userAPIClient = userAPIClient;
         this.auditService = auditService;
+        this.roleAPIClient = roleAPIClient;
         claimsUtil = new ClaimsUtil();
     }
 
     @PostMapping("/insertUsuario")
     public String insertUsuario(@RequestBody Usuario usuario) {
         this.auditService.audUserInsert("CREATEUSER",this.claimsUtil.getClaimUserId(),"Crea Usuario|NickName:"+usuario.getNickname());
-        return userAPIClient.insertUsuario(usuario);
+
+        String jsonResponse = userAPIClient.insertUsuario(usuario);
+
+        return this.roleAPIClient.AssignRoleTrigger(jsonResponse, roleApiKey);
+        
     }
 
     @PutMapping("/actualizarUsuario")
