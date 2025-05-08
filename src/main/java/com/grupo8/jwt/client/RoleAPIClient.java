@@ -1,7 +1,10 @@
 package com.grupo8.jwt.client;
 
+import java.util.List;
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -52,5 +55,8 @@ public interface RoleAPIClient {
 
     @RequestMapping(method = RequestMethod.POST, value = "/unassignRoleTrigger")
     String UnassignRoleTrigger(@RequestBody UnassignRoleRequest unassignRoleRequest, @RequestParam("code") String apiKey);
+
+    @GetMapping(value = "/user/{userId}/roles")
+    String getRoleNameByUserID(@PathVariable("userId") Long userId, @RequestParam("code") String apiKey);
     
 }
