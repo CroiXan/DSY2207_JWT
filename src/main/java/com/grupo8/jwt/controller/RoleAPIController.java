@@ -59,7 +59,11 @@ public class RoleAPIController {
     @DeleteMapping("/deleteRole/{id}")
     String deleteRole(@PathVariable("id") Long id){
         this.auditService.rolAuditInsert("DELETE","Borra Rol",id.intValue(),this.claimsUtil.getClaimUserId());
-        return this.roleAPIClient.deleteRole(id,roleApiKey);
+        String response = this.roleAPIClient.deleteRole(id,roleApiKey);
+        if ("Rol eliminado".equals(response)) {
+            this.roleAPIClient.UnassignRoleTrigger(new UnassignRoleRequest(id),roleApiKey);
+        }
+        return response;
     }
 
     @PostMapping("/createUserRole")
@@ -91,11 +95,7 @@ public class RoleAPIController {
     @DeleteMapping("/deleteUserRole/{id}")
     String deleteUserRole(@PathVariable("id") Long id){
         this.auditService.UserRolAuditInsert("UNASSIGN", id.intValue(), 0, this.claimsUtil.getClaimUserId());
-        String response = this.roleAPIClient.deleteUserRole(id,roleApiKey);
-        if ("Rol eliminado".equals(response)) {
-            this.roleAPIClient.UnassignRoleTrigger(new UnassignRoleRequest(id),roleApiKey);
-        }
-        return response;
+        return this.roleAPIClient.deleteUserRole(id,roleApiKey);
     }
 
 }
