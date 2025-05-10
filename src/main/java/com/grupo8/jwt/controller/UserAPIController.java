@@ -36,7 +36,9 @@ public class UserAPIController {
 
         String jsonResponse = userAPIClient.insertUsuario(usuario);
 
-        return this.roleAPIClient.AssignRoleTrigger(jsonResponse, roleApiKey);
+        this.roleAPIClient.AssignRoleTrigger(jsonResponse, roleApiKey);
+
+        return jsonResponse;
         
     }
 
